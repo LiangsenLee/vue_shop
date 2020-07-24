@@ -1,3 +1,4 @@
+
 <template>
   <div class="login_container">
 
@@ -9,19 +10,19 @@
       <!-- 头像end -->
       <!-- 表单s -->
 
-      <el-form class="login_form">
-        <el-form-item>
-          <el-input v-model="uname" placeholder="用户名" prefix-icon="el-icon-user"></el-input>
+    <el-form ref="loginFormRef" class="login_form" :model="loginForm" :rules="LoginFormRules">
+        <el-form-item prop="username">
+          <el-input v-model="loginForm.username" placeholder="用户名" prefix-icon="el-icon-user"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-input v-model="pwd" placeholder="密码" prefix-icon="el-icon-lock"></el-input>
+        <el-form-item prop="password">
+          <el-input v-model="loginForm.password" placeholder="密码" show-password prefix-icon="el-icon-lock"  @keyup.enter.native="onSubmit" ></el-input>
         </el-form-item>
         <el-form-item class="btns">
           <el-button type="primary" @click="onSubmit">登录</el-button>
-          <el-button type="info" @click="onSubmit">重置</el-button>
+          <el-button type="info" @click="resetLoginForm">重置</el-button>
         </el-form-item>
 
-      </el-form>
+    </el-form>
       <!-- 表单e -->
     </div>
   </div>
@@ -29,7 +30,43 @@
 <script>
 export default {
   data () {
-    return {}
+    return {
+      loginForm: {
+        username: 'admin',
+        password: '123456'
+      },
+      LoginFormRules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 4, max: 8, message: '长度在 4 到 8 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 18, message: '长度在 6 到 18 个字符', trigger: 'blur' }
+        ]
+      }
+    }
+  },
+
+  methods: {
+    onSubmit () {
+      console.log(111)
+      this.$refs.loginFormRef.validate(async valid => {
+        if (!valid) return false
+        const { data: res } = await this.$http.post('/login', this.loginForm)
+        console.log(res)
+        res.meta.msg === '登录成功' && this.$message.success('登录成功!')
+        this.resetLoginForm()
+        window.sessionStorage.setItem('token', res.data.token)
+        this.$router.push('/home')
+      })
+    },
+    resetLoginForm () {
+      this.$refs.loginFormRef.resetFields()
+    },
+    handle () {
+      console.log(111)
+    }
   }
 }
 </script>
@@ -43,7 +80,6 @@ export default {
     height: 300px;
     border-radius: 5px;
     background-color: #fff;
-
     position: absolute;
     top: 50%;
     left: 50%;
@@ -51,7 +87,7 @@ export default {
     .avatar_box {
       width: 130px;
       height: 130px;
-      box-shadow: 0 0 10px #fff;
+      box-shadow: 0 0 10px 1px #fff;
       border: 10px solid #fff;
       background-color: #eee;
       border-radius: 50%;
