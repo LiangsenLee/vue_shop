@@ -10,6 +10,14 @@ import axios from 'axios'
 // 导入全局样式
 import './assets/css/global.css'
 axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
+// 请求拦截,+header 带token
+axios.interceptors.request.use(config => {
+  config.headers.Authorization = window.sessionStorage.getItem('token')
+  return config
+}, error => {
+  return Promise.reject(error)
+})
+
 Vue.config.productionTip = false
 
 Vue.use(ElementUI)
