@@ -117,11 +117,11 @@
     </el-table>
     <!-- 分页s  -->
     <!-- 分页导航区域
-@size-change(pagesize改变时触发)
-@current-change(页码发生改变时触发)
-:current-page(设置当前页码)
-:page-size(设置每页的数据条数)
-:total(设置总页数) -->
+        @size-change(pagesize改变时触发)
+        @current-change(页码发生改变时触发)
+        :current-page(设置当前页码)
+        :page-size(设置每页的数据条数)
+        :total(设置总页数) -->
     <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
       :current-page="queryInfo.pagenum" :page-sizes="[1,2,5,10]" :page-size="queryInfo.pagesize"
       layout="total, sizes, prev, pager, next, jumper" :total="total">
@@ -148,7 +148,7 @@ export default {
       queryInfo: {
         query: '', // 查询参数
         pagenum: 1, // 当前页码
-        pagesize: 2 // 每页条数
+        pagesize: 10 // 每页条数
       },
       userList: [],
       total: 1,
@@ -242,12 +242,14 @@ export default {
         if (!valid) return false
         try {
           const { data: res } = await this.$http.post('users', this.addForm)
-          res.meta.status === 201 &&
-            this.getUserList() &&
-            this.$message.success('添加成功!') &&
-            (this.centerDialogVisible = false)
+          if (res.meta.status === 201) {
+            this.getUserList()
+            this.$message.success('添加成功!')
+            this.addDialogVisible = false
+          }
         } catch (error) {
-          this.$message.error(error) && (this.addDialogVisible = false)
+          this.$message.error(error)
+          this.addDialogVisible = false
         }
       })
     },
@@ -271,7 +273,6 @@ export default {
         if (!valid) return false
         try {
           const { data: res } = await this.$http.put('users/' + this.editForm.id, { mobile: this.editForm.mobile, email: this.editForm.email })
-          console.log(res, '---------put')
           res.meta.status === 200 && this.$message.success('修改成功!') && this.getUserList()
         } catch (error) {
           this.$message.error('操作失败!')
@@ -288,11 +289,15 @@ export default {
         type: 'warning'
       }).then(async () => {
         const { data: res } = await this.$http.delete('users/' + id)
-
-        res.meta.status === 200 && this.getUserList() && this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
+        if (res.meta.status === 200) {
+          this.getUserList()
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        } else {
+          this.$message.error('删除失败!')
+        }
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -302,6 +307,7 @@ export default {
     }
   }
 }
+
 </script>
 <style lang="less" scoped>
 .el-card {
