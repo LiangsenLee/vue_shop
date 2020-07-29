@@ -1,8 +1,6 @@
 <template>
   <div>
-    <h3>用户列表组件</h3>
     <!-- 面包屑导航 -->
-
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>用户管理</el-breadcrumb-item>
@@ -52,7 +50,7 @@
 
       <el-dialog title="编辑用户" :visible.sync="editDialogVisible" width="50%" @close="editDialogClose">
 
-          <!-- 表单s  -->
+        <!-- 表单s  -->
         <el-form :model="editForm" :rules="addFormRules" ref="editFormRef" label-width="70px">
 
           <el-form-item label="用户名" prop="username">
@@ -73,7 +71,23 @@
         </span>
       </el-dialog>
       <!-- 修改用户的dialog end -->
+      <!-- 分配角色的dialog start -->
 
+      <el-dialog title="分配角色" :visible.sync="roleDialogVisible" width="50%" @close="roleDialogClose">
+        <p>当前用户: {{userInfo.username}}</p>
+        <p>当前权限: {{userInfo.role_name}}</p>
+        <p>分配新角色:
+          <el-select v-model="roleId" placeholder="请选择">
+            <el-option v-for="item in rolesList" :key="item.id" :label="item.roleName" :value="item.id">
+            </el-option>
+          </el-select>
+        </p>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="roleDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="submitRoleFormInfo">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 分配角色的dialog end -->
     </el-card>
     <!-- 表格 -->
     <el-table border stripe :data="userList" style="width: 100%">
@@ -110,7 +124,7 @@
           </el-tooltip>
           <!-- 提示文字 + 设置按钮 -->
           <el-tooltip class="item" effect="dark" content="分配权限" placement="top">
-            <el-button id="setBtn" type="primary" icon="el-icon-setting"></el-button>
+            <el-button id="setBtn" type="primary" icon="el-icon-setting" @click="setRoles(scope.row)"></el-button>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -150,6 +164,7 @@ export default {
         pagenum: 1, // 当前页码
         pagesize: 10 // 每页条数
       },
+      roleDialogVisible: false,
       userList: [],
       total: 1,
       editDialogVisible: false, // 修改用户是否弹出对话框
@@ -183,8 +198,12 @@ export default {
       },
       editForm: {
         // 修改用户表单
-
-      }
+      },
+      // 点击设置分配角色后会为userinfo赋值
+      userInfo: {},
+      // 点击设置分配角色后会为rolesList赋值
+      rolesList: [],
+      roleId: null // 选择的角色id
     }
   },
   created () {
@@ -272,8 +291,13 @@ export default {
       this.$refs.editFormRef.validate(async valid => {
         if (!valid) return false
         try {
-          const { data: res } = await this.$http.put('users/' + this.editForm.id, { mobile: this.editForm.mobile, email: this.editForm.email })
-          res.meta.status === 200 && this.$message.success('修改成功!') && this.getUserList()
+          const { data: res } = await this.$http.put(
+            'users/' + this.editForm.id,
+            { mobile: this.editForm.mobile, email: this.editForm.email }
+          )
+          res.meta.status === 200 &&
+            this.$message.success('修改成功!') &&
+            this.getUserList()
         } catch (error) {
           this.$message.error('操作失败!')
         } finally {
@@ -287,27 +311,52 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(async () => {
-        const { data: res } = await this.$http.delete('users/' + id)
-        if (res.meta.status === 200) {
-          this.getUserList()
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
-        } else {
-          this.$message.error('删除失败!')
-        }
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
       })
+        .then(async () => {
+          const { data: res } = await this.$http.delete('users/' + id)
+          if (res.meta.status === 200) {
+            this.getUserList()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          } else {
+            this.$message.error('删除失败!')
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    async  setRoles (row) {
+      // 点击分配权限
+      this.userInfo = row
+      const { data: res } = await this.$http.get('roles')
+      console.log(res, '-------------res')
+      res.meta.status === 200 ? this.rolesList = res.data : this.$message.error('获取角色列表失败!')
+      this.roleDialogVisible = true
+    },
+    roleDialogClose () {
+      this.userInfo = ''
+      this.roleId = ''
+    },
+    async  submitRoleFormInfo () {
+      if (!this.roleId) return false
+      try {
+        const { data: res } = await this.$http.put(`users/${this.userInfo.id}/role`, { rid: this.roleId })
+
+        res.meta.status === 200 ? this.$message.success('分配角色成功!') && this.getUserList() : this.$message.error('分配角色失败!')
+      } catch (error) {
+        console.log(error, '-----cuowu')
+      } finally {
+        this.roleDialogVisible = false
+      }
     }
   }
 }
-
 </script>
 <style lang="less" scoped>
 .el-card {
@@ -322,6 +371,5 @@ export default {
 }
 #delBtn {
   background-color: rgb(175, 77, 77);
-  border-color: rgb(56, 56, 56);
 }
 </style>

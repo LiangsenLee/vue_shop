@@ -16,7 +16,9 @@
       <div class="toggleCollapse" @click="isCollapse = !isCollapse">|||</div>
           <!-- 侧边栏菜单 -->
           <el-menu  background-color="#fafdfd" unique-opened :collapse="isCollapse" :collapse-transition="false" router default-active="$route.path">
+
             <!-- 一级菜单 -->
+
             <el-submenu :index="'/'+item.path" :key='item.id' v-for="item in menuList">
               <!-- 一级菜单模板 -->
               <template slot="title">
