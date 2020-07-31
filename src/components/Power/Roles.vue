@@ -11,32 +11,54 @@
     <el-card>
       <el-row>
         <el-col>
-          <el-button type="primary" plain>添加用户</el-button>
+          <el-button type="primary" plain @click="addRoles">添加角色</el-button>
         </el-col>
       </el-row>
+          <!-- 添加对话框 -->
+
+      <el-dialog title="权限分配" :visible.sync="rolesDialogVisible" width="50%" @close="closeAddRolesDialog">
+          <el-form :model="addRolesForm" :rules="rules" ref="addRolesFormRef" label-width="100px" class="demo-ruleForm">
+             <el-form-item label="角色名称" prop="roleName">
+               <el-input v-model="addRolesForm.roleName"></el-input>
+             </el-form-item>
+             <el-form-item label="角色描述" prop="roleDesc">
+               <el-input v-model="addRolesForm.roleDesc"></el-input>
+             </el-form-item>
+          </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="rolesDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="submitAddRoles">确 定</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 对话框 -->
       <!-- 表格s -->
       <el-table border stripe :data="rolesList" style="width: 100%">
         <el-table-column type="expand">
           <template slot-scope="scope">
-            <el-row  v-for="(item1,i1) in scope.row.children" :key="item1.id" :class="['bdline',i1 ===0 ? 'btline':'','vcenter']" closable @close="removeRightsById(scope.row,item1.id)">
+            <el-row v-for="(item1,i1) in scope.row.children" :key="item1.id"
+              :class="['bdline',i1 ===0 ? 'btline':'','vcenter']" closable
+              @close="removeRightsById(scope.row,item1.id)">
               <!-- 第一列 -->
               <el-col :span="5">
                 <!-- 一级权限标签 -->
 
-                <el-tag >{{item1.authName}}</el-tag>
+                <el-tag>{{item1.authName}}</el-tag>
                 <i class="el-icon-caret-right"></i>
 
               </el-col>
               <!-- 第二列 -->
               <el-col :span="19">
-                <el-row v-for="(item2,i2) in item1.children" :key="item2.id" :class="[ i2!==0&&'btline','vcenter']" closable @close="removeRightsById(scope.row,item2.id)" >
+                <el-row v-for="(item2,i2) in item1.children" :key="item2.id" :class="[ i2!==0&&'btline','vcenter']"
+                  closable @close="removeRightsById(scope.row,item2.id)">
                   <el-col :span="6">
-                    <el-tag type="success" >{{item2.authName}}</el-tag>
+                    <el-tag type="success">{{item2.authName}}</el-tag>
                     <i class="el-icon-caret-right"></i>
                   </el-col>
 
-                  <el-col :span="18" >
-                    <el-tag v-for="(item3) in item2.children" :key="item3.id" type="warning" closable @close="removeRightsById(scope.row,item3.id)">{{item3.authName}}</el-tag>
+                  <el-col :span="18">
+                    <el-tag v-for="(item3) in item2.children" :key="item3.id" type="warning" closable
+                      @close="removeRightsById(scope.row,item3.id)">{{item3.authName}}</el-tag>
                   </el-col>
                 </el-row>
               </el-col>
@@ -64,33 +86,27 @@
             </el-tooltip>
             <!-- 提示文字 + 设置按钮 -->
             <el-tooltip class="item" effect="dark" content="分配权限" placement="top">
-              <el-button id="setBtn" type="primary" icon="el-icon-setting"  @click="showSetRightDialog(scope.row)"></el-button>
+              <el-button id="setBtn" type="primary" icon="el-icon-setting" @click="showSetRightDialog(scope.row)">
+              </el-button>
             </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
       <!-- 表格end -->
 
-<!-- 对话框 -->
+      <!-- 对话框 -->
 
- <el-dialog title="权限分配" :visible.sync="rightsDialogVisible" width="50%" @close="closeSetRightDialog" >
-<el-tree
-  :data="rightsList"
-  show-checkbox
-  default-expand-all
-  node-key="id"
-  ref="tree"
-  highlight-current
-  :default-checked-keys="defKeys"
-  :props="defaultProps">
-</el-tree>
+      <el-dialog title="权限分配" :visible.sync="rightsDialogVisible" width="50%" @close="closeSetRightDialog">
+        <el-tree :data="rightsList" show-checkbox default-expand-all node-key="id" ref="tree" highlight-current
+          :default-checked-keys="defKeys" :props="defaultProps">
+        </el-tree>
         <span slot="footer" class="dialog-footer">
           <el-button @click="rightsDialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="submitCheckedKeys">确 定</el-button>
         </span>
       </el-dialog>
 
-<!-- 对话框 -->
+      <!-- 对话框 -->
 
     </el-card>
     <!-- 卡片视图区域 end-->
@@ -102,6 +118,15 @@ export default {
   props: [],
   data () {
     return {
+      rules: {
+        roleName: [
+          { required: true, message: '请输入角色名称', trigger: 'blur' },
+          { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
+        ],
+        roleDesc: [
+          { required: true, message: '请输入角色描述', trigger: 'blur' }
+        ]
+      },
       rightsDialogVisible: false,
       rolesList: [],
       rightsList: [],
@@ -110,7 +135,12 @@ export default {
         label: 'authName'
       },
       defKeys: [], // 默认选中的三级下拉框节点
-      roleId: '' // 当前角色的id
+      roleId: '', // 当前角色的id
+      addRolesForm: {
+        roleName: '',
+        roleDesc: ''
+      },
+      rolesDialogVisible: false
     }
   },
   created () {
@@ -128,16 +158,23 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(async () => {
-        const { data: res } = await this.$http.delete(`roles/${id1.id}/rights/${id2}`)
-
-        res.meta.status === 200 ? this.$message.success('取消权限成功!') && (id1.children = res.data) : this.$message.error('取消权限失败!')
-      }).catch(() => {
-        this.message({
-          type: 'info',
-          message: '已取消删除'
-        })
       })
+        .then(async () => {
+          const { data: res } = await this.$http.delete(
+            `roles/${id1.id}/rights/${id2}`
+          )
+
+          res.meta.status === 200
+            ? this.$message.success('取消权限成功!') &&
+              (id1.children = res.data)
+            : this.$message.error('取消权限失败!')
+        })
+        .catch(() => {
+          this.message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
     async showSetRightDialog (role) {
       this.roleId = role.id
@@ -154,8 +191,12 @@ export default {
       const arr = [...hanfKeys, ...checkedKeys].join(',')
       console.log(arr)
       try {
-        const { data: res } = await this.$http.post(`roles/${this.roleId}/rights`, { rids: arr })
-        res.meta.status === 200 ? this.$message.success('更新权限成功!') && this.getRolesList() : this.$message.error('更新权限失败!')
+        const {
+          data: res
+        } = await this.$http.post(`roles/${this.roleId}/rights`, { rids: arr })
+        res.meta.status === 200
+          ? this.$message.success('更新权限成功!') && this.getRolesList()
+          : this.$message.error('更新权限失败!')
       } catch (error) {
         this.$message.error('更新权限失败!')
       } finally {
@@ -175,6 +216,27 @@ export default {
     // 关闭dialog
     closeSetRightDialog () {
       this.defKeys = []
+    },
+    // 添加角色
+    addRoles () {
+      this.rolesDialogVisible = true
+    },
+    // 关闭添加角色对话框
+    closeAddRolesDialog () {
+      console.log(this.$refs.addRolesFormRef)
+      this.$refs.addRolesFormRef.resetFields()
+    },
+    // 提交添加角色
+    async  submitAddRoles () {
+      try {
+        const { data: res } = await this.$http.post('roles', this.addRolesForm)
+        res.meta.status === 201 && this.$message.success('添加角色成功!') && this.getRolesList()
+      } catch (error) {
+        this.$message.error(error)
+      } finally {
+        this.$refs.addRolesFormRef.resetFields()
+        this.rolesDialogVisible = false
+      }
     }
   }
 }
@@ -200,8 +262,8 @@ export default {
   border-bottom: 1px solid #ccc;
   margin-top: 10px;
 }
-.vcenter{
-    display: flex;
-    align-items: center;
+.vcenter {
+  display: flex;
+  align-items: center;
 }
 </style>

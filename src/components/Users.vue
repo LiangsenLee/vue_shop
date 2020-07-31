@@ -1,4 +1,4 @@
-<template>
+    <template>
   <div>
     <!-- 面包屑导航 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -331,24 +331,32 @@ export default {
           })
         })
     },
-    async  setRoles (row) {
+    async setRoles (row) {
       // 点击分配权限
       this.userInfo = row
       const { data: res } = await this.$http.get('roles')
       console.log(res, '-------------res')
-      res.meta.status === 200 ? this.rolesList = res.data : this.$message.error('获取角色列表失败!')
+      res.meta.status === 200
+        ? (this.rolesList = res.data)
+        : this.$message.error('获取角色列表失败!')
       this.roleDialogVisible = true
     },
     roleDialogClose () {
       this.userInfo = ''
       this.roleId = ''
     },
-    async  submitRoleFormInfo () {
+    async submitRoleFormInfo () {
       if (!this.roleId) return false
       try {
-        const { data: res } = await this.$http.put(`users/${this.userInfo.id}/role`, { rid: this.roleId })
+        const {
+          data: res
+        } = await this.$http.put(`users/${this.userInfo.id}/role`, {
+          rid: this.roleId
+        })
 
-        res.meta.status === 200 ? this.$message.success('分配角色成功!') && this.getUserList() : this.$message.error('分配角色失败!')
+        res.meta.status === 200
+          ? this.$message.success('分配角色成功!') && this.getUserList()
+          : this.$message.error('分配角色失败!')
       } catch (error) {
         console.log(error, '-----cuowu')
       } finally {
