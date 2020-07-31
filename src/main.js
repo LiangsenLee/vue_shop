@@ -6,6 +6,7 @@ import ElementUI, {
 } from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
+import ZkTable from 'vue-table-with-tree-grid'
 
 // 导入全局样式
 import './assets/css/global.css'
@@ -19,7 +20,7 @@ axios.interceptors.request.use(config => {
 })
 
 Vue.config.productionTip = false
-
+Vue.use(ZkTable)
 Vue.use(ElementUI)
 Vue.prototype.$http = axios
 Vue.prototype.$message = message
