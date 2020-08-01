@@ -1,16 +1,29 @@
 <template>
     <div>
        <el-card>
-  <el-select v-model="value1" multiple placeholder="请选择">
-    <el-option
+  <!-- <el-select v-model="value1" multiple placeholder="请选择"> -->
+    <!-- <el-option
       v-for="item in options"
       :key="item.value"
       :label="item.label"
       :value="item.value"
      >
 
+    </el-option> -->
+
+    <el-select v-model="value1" multiple placeholder="请选择">
+    <el-option
+      v-for="item in options"
+      allow-create
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+
+      <span style="float: left">{{item.label}}</span>
+      <span style="float: right; color: #8492a6; font-size: 13px"></span>
     </el-option>
   </el-select>
+  <!-- </el-select> -->
 
        </el-card>
     </div>
