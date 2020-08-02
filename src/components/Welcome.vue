@@ -1,31 +1,8 @@
 <template>
     <div>
-       <el-card>
-  <!-- <el-select v-model="value1" multiple placeholder="请选择"> -->
-    <!-- <el-option
-      v-for="item in options"
-      :key="item.value"
-      :label="item.label"
-      :value="item.value"
-     >
 
-    </el-option> -->
+<img src="../assets/bg.jpg" alt="">
 
-    <el-select v-model="value1" multiple placeholder="请选择">
-    <el-option
-      v-for="item in options"
-      allow-create
-      :key="item.value"
-      :label="item.label"
-      :value="item.value">
-
-      <span style="float: left">{{item.label}}</span>
-      <span style="float: right; color: #8492a6; font-size: 13px"></span>
-    </el-option>
-  </el-select>
-  <!-- </el-select> -->
-
-       </el-card>
     </div>
 </template>
 <script>
@@ -62,5 +39,9 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-
+img{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
 </style>
