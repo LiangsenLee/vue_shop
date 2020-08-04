@@ -1,4 +1,4 @@
-    <template>
+<template>
   <div>
     <!-- 面包屑导航 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -204,6 +204,7 @@ export default {
       // 点击设置分配角色后会为rolesList赋值
       rolesList: [],
       roleId: null // 选择的角色id
+
     }
   },
   created () {

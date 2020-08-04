@@ -15,3 +15,7 @@ html,body,#app{
 #app{
     min-width: 1366px;
 }
+
+.ql-editor{
+    min-height: 300px;
+}
