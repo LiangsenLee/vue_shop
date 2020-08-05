@@ -4,8 +4,8 @@
   <el-container class="home-container">
     <el-header height="70px" class="header">
       <div class="img">
-        <img src="../assets/logo3.png" alt="">
-        <span>React App</span>
+        <img src="../assets/logo2.png" alt="">
+        <span>Vue App</span>
       </div>
       <el-button type="info" @click="logout" around>退出</el-button>
     </el-header>
@@ -15,7 +15,7 @@
   <el-aside :width=" isCollapse  ? '65px' :'200px' ">
       <div class="toggleCollapse" @click="isCollapse = !isCollapse">|||</div>
           <!-- 侧边栏菜单 -->
-          <el-menu  background-color="#fafdfd" unique-opened :collapse="isCollapse" :collapse-transition="false" router default-active="$route.path">
+          <el-menu  background-color="#383838" unique-opened :collapse="isCollapse" :collapse-transition="false" router default-active="$route.path">
 
             <!-- 一级菜单 -->
 
@@ -94,12 +94,13 @@ export default {
 .home-container {
   height: 100%;
   .header {
-    background-color: #0a5555;
+    background-color: #424242;
     color: #14bdcc;
     padding: 5px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+box-shadow: 1px 1px 3px 1px #ccc;
 
     .img {
       height: 100%;
@@ -114,33 +115,36 @@ export default {
   }
 
   .el-aside {
-    background-color: #fafdfd;
-    color: #59c3c8;
-
+    background-color: #383838;
+    color: #d1d3d3;
+    box-shadow: 1px 1px 3px 1px #ccc;
     height: 100%;
     .toggleCollapse{
         text-align: center;
-        background-color: #f0f4f5;
+        background-color: #434646;
         cursor: pointer;
-        color: #a2adaf;
-        &:hover{
-            background-color: rgb(219, 181, 200);
-            color:#14bdcc;
-        }
+        color: #a3a6a7;
+
     }
     .aside-menu{
-        color: #2b3435;
+        color: #f6fafa !important;
 
     }
       .item-two{
             padding-left: 20px;
         }
+        .el-menu-item{
+        color: aliceblue ;
+        &:hover{
+            color: rgb(64, 158, 255) !important;
+        }
+    }
+
   }
 
-  .el-main {
+.el-main {
     background-color: #fff;
     color: #00adb5;
-
     height: 100%;
   }
 }

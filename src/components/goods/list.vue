@@ -31,7 +31,7 @@
         </el-table-column>
         <el-table-column  label="更新时间" width="220">
             <template slot-scope="scope">
-               {{scope.row.upd_time | dateFormat}}
+               {{scope.row.upd_time*1000 | dateFormat}}
             </template>
         </el-table-column>
         <el-table-column label="操作" width="280">
@@ -100,6 +100,9 @@ export default {
         this.$message.error('获取参数失败!')
         console.log(error)
       }
+    },
+    handleEdit () {
+      console.log('handleEdit')
     },
     resetSearch () {
       this.getGoodsList()
